@@ -34,16 +34,18 @@
 //#define setup_AZ_steps 76800              // Steps for 360 degrees on the Azimuth axis
 #define setup_steps 86000                   // Steps for 360 degrees on both axis
 
-#define setup_EL_endstop 14                  // Endstop Signal EL
-#define setup_AZ_endstop 12                  // Endstop Signal AZ
+#define setup_EL_endstop 35                  // Endstop Signal EL
+#define setup_AZ_endstop 32                  // Endstop Signal AZ
 
-#define setup_EnaStepper 13                  // Enable Steppers (off = Steppers enabled)
+#define setup_EnaStepper 34                  // Enable Steppers (off = Steppers enabled)
 // Pins Stepper EL
-#define setup_EL_PulPin 16                   // Pulse pin
-#define setup_EL_DirPin 5                   // Direction pin
+#define setup_EL_PulPin 33                   // Pulse pin
+#define setup_EL_DirPin 25                   // Direction pin
 // Pins Stepper AZ
-#define setup_AZ_PulPin 4                   // Pulse pin
-#define setup_AZ_DirPin 0                   // Direction pin
+#define setup_AZ_PulPin 26                   // Pulse pin
+#define setup_AZ_DirPin 27                   // Direction pin
+
+#define ONBOARD_LED  2
 
 //----- Start of Programm -----
 String serialIn;
@@ -70,7 +72,7 @@ void setup() {
   pinMode(setup_EL_endstop, INPUT);
   pinMode(setup_AZ_endstop, INPUT);
 
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(ONBOARD_LED, OUTPUT);
 
 }
 
@@ -81,10 +83,10 @@ void loop() {
 
     serialIn = Serial.readString();
 
-     digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+     digitalWrite(ONBOARD_LED, HIGH);   // turn the LED on (HIGH is the voltage level)
      delay(500);                        // wait for a second
-     digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW             
-    
+     digitalWrite(ONBOARD_LED, LOW);    // turn the LED off by making the voltage LOW
+
 
     // There is, so let's see if it is a valid cmd
     if (serialIn == "B"){                                 // Report elevation (el)
@@ -106,13 +108,13 @@ void loop() {
     } else if(serialIn == "E"){                           // Stop el rotation
       cmd_stopEL();
     } else if(serialIn == "L"){                           // rotate azimuth left (CCW)
-      
+
     } else if(serialIn == "R"){                           // rotate azimuth right (CW)
-      
+
     } else if(serialIn == "D"){                           // rotate elevation down
-      
+
     } else if(serialIn == "U"){                           // rotate elevation up
-      
+
     } else if(serialIn.substring(0, 1) == "M"){           // Move to azimuth
       cmd_moveToAZ(serialIn.substring(1, 4));
     } else if(serialIn.substring(0, 1) == "W"){           // Move to azimuth and elevation
@@ -129,22 +131,22 @@ void loop() {
     } else if(serialIn == "O"){                           // Azimuth offset calibration
       cmd_Offset_cal_AZ();
     } else if(serialIn == "F"){                           // Azimuth full scale calibration
-      
+
     } else if(serialIn == "O2"){                          // Elevation offset calibration
       cmd_Offset_cal_EL();
     } else if(serialIn == "F2"){                          // Elevation full scale calibration
       // cmd_calibrateEL();
     } else if(serialIn == "P36"){                         // Switch to 360 degree mode
-      
+
     } else if(serialIn == "P45"){                         // Switch to 450 degree mode
-      
+
     } else if(serialIn == "Z"){                           // Toggle north/South centered mode
-      
+
     } else if(serialIn == "H"){                           // Help
-      
+
     }
   }
-    
+
 }
 
 
@@ -165,7 +167,7 @@ void moveStepperOneDeg(int PULpin, int DIRpin, boolean rev){
     delayMicroseconds(pub_stepDelay);
     i++;
   }
-  
+
 }
 
 void moveStepperOneStep(int PULpin, int DIRpin, boolean rev){
@@ -175,7 +177,7 @@ void moveStepperOneStep(int PULpin, int DIRpin, boolean rev){
     digitalWrite(DIRpin, HIGH);
   }
 
-  
+
     digitalWrite(PULpin, HIGH);
     delayMicroseconds(100);
     digitalWrite(PULpin, LOW);
