@@ -79,7 +79,7 @@ void setup() {
 
   pinMode(ONBOARD_LED, OUTPUT);
 
-  disableMotors();
+  disableSteppers();
 
 }
 
@@ -90,10 +90,7 @@ void loop() {
 
     serialIn = ESP_BT.readString();
 
-     digitalWrite(ONBOARD_LED, HIGH);   // turn the LED on (HIGH is the voltage level)
-     delay(500);                        // wait for a second
-     digitalWrite(ONBOARD_LED, LOW);    // turn the LED off by making the voltage LOW
-
+    digitalWrite(ONBOARD_LED, HIGH);   // turn the LED on (HIGH is the voltage level)
 
     // There is, so let's see if it is a valid cmd
     if (serialIn == "B"){                                 // Report elevation (el)
@@ -123,10 +120,10 @@ void loop() {
     } else if(serialIn == "U"){                           // rotate elevation up
 
     } else if(serialIn.substring(0, 1) == "M"){           // Move to azimuth
-      enableMotors();
+      enableSteppers();
       cmd_moveToAZ(serialIn.substring(1, 4));
     } else if(serialIn.substring(0, 1) == "W"){           // Move to azimuth and elevation
-      enableMotors();
+      enableSteppers();
       cmd_moveToAZ(serialIn.substring(1, 4));
       cmd_moveToEL(serialIn.substring(5, 8));
     } else if(serialIn == "X1"){                          // Azimuth rotation speed 1
@@ -138,15 +135,15 @@ void loop() {
     } else if(serialIn == "X4"){                          // Azimuth rotation speed 4
       pub_stepDelay = 300;
     } else if(serialIn == "O"){                           // Azimuth offset calibration
-      enableMotors();
+      enableSteppers();
       cmd_Offset_cal_AZ();
     } else if(serialIn == "F"){                           // Azimuth full scale calibration
 
     } else if(serialIn == "O2"){                          // Elevation offset calibration
-      enableMotors();
+      enableSteppers();
       cmd_Offset_cal_EL();
     } else if(serialIn == "F2"){                          // Elevation full scale calibration
-      enableMotors();
+      enableSteppers();
       // cmd_calibrateEL();
     } else if(serialIn == "P36"){                         // Switch to 360 degree mode
 
@@ -158,9 +155,10 @@ void loop() {
 
     }
 
-    disableMotors();
-  }
+    disableSteppers();
 
+    digitalWrite(ONBOARD_LED, LOW);    // turn the LED off by making the voltage LOW
+  }
 }
 
 
@@ -198,10 +196,10 @@ void moveStepperOneStep(int PULpin, int DIRpin, boolean rev){
     delayMicroseconds(pub_stepDelay);
 }
 
-void enableMotors() {  
+void enableSteppers() {  
   digitalWrite(setup_EnaStepper, LOW);
 }
 
-void disableMotors() {  
+void disableSteppers() {  
   digitalWrite(setup_EnaStepper, HIGH);
 }
