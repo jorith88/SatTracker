@@ -35,9 +35,10 @@
 #define setup_steps 86000                   // Steps for 360 degrees on both axis
 
 #define setup_EL_endstop 35                  // Endstop Signal EL
-#define setup_AZ_endstop 32                  // Endstop Signal AZ
+#define setup_AZ_endstop 34                  // Endstop Signal AZ
 
-#define setup_EnaStepper 34                  // Enable Steppers (off = Steppers enabled)
+#define setup_EnaStepper 32                  // Enable Steppers (off = Steppers enabled)
+
 // Pins Stepper EL
 #define setup_EL_PulPin 33                   // Pulse pin
 #define setup_EL_DirPin 25                   // Direction pin
@@ -73,6 +74,8 @@ void setup() {
   pinMode(setup_AZ_endstop, INPUT);
 
   pinMode(ONBOARD_LED, OUTPUT);
+
+  disableMotors();
 
 }
 
@@ -116,8 +119,10 @@ void loop() {
     } else if(serialIn == "U"){                           // rotate elevation up
 
     } else if(serialIn.substring(0, 1) == "M"){           // Move to azimuth
+      enableMotors();
       cmd_moveToAZ(serialIn.substring(1, 4));
     } else if(serialIn.substring(0, 1) == "W"){           // Move to azimuth and elevation
+      enableMotors();
       cmd_moveToAZ(serialIn.substring(1, 4));
       cmd_moveToEL(serialIn.substring(5, 8));
     } else if(serialIn == "X1"){                          // Azimuth rotation speed 1
@@ -129,12 +134,15 @@ void loop() {
     } else if(serialIn == "X4"){                          // Azimuth rotation speed 4
       pub_stepDelay = 300;
     } else if(serialIn == "O"){                           // Azimuth offset calibration
+      enableMotors();
       cmd_Offset_cal_AZ();
     } else if(serialIn == "F"){                           // Azimuth full scale calibration
 
     } else if(serialIn == "O2"){                          // Elevation offset calibration
+      enableMotors();
       cmd_Offset_cal_EL();
     } else if(serialIn == "F2"){                          // Elevation full scale calibration
+      enableMotors();
       // cmd_calibrateEL();
     } else if(serialIn == "P36"){                         // Switch to 360 degree mode
 
@@ -145,6 +153,8 @@ void loop() {
     } else if(serialIn == "H"){                           // Help
 
     }
+
+    disableMotors();
   }
 
 }
@@ -182,4 +192,12 @@ void moveStepperOneStep(int PULpin, int DIRpin, boolean rev){
     delayMicroseconds(100);
     digitalWrite(PULpin, LOW);
     delayMicroseconds(pub_stepDelay);
+}
+
+void enableMotors() {  
+  digitalWrite(setup_EnaStepper, LOW);
+}
+
+void disableMotors() {  
+  digitalWrite(setup_EnaStepper, HIGH);
 }
