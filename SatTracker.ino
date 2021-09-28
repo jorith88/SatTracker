@@ -27,7 +27,7 @@
 // Z              - Toggle north / south centered mode
 // H              - Help
 
-
+#include "BluetoothSerial.h" 
 
 //----- SETUP -----
 //#define setup_EL_steps 76800              // Steps for 360 degrees on the Elevation axis
@@ -50,6 +50,7 @@
 
 //----- Start of Programm -----
 String serialIn;
+BluetoothSerial ESP_BT; //Object for Bluetooth
 
 // PUBlic variables
 int pub_EL = 0;                     // Elevation angle
@@ -61,6 +62,9 @@ int pub_stepDelay = 300;           // delay between steps in microseconds / Set 
 void setup() {
   Serial.begin(115200);
   Serial.setTimeout(50);
+
+  ESP_BT.begin("SatTracker"); //Name of your Bluetooth Signal
+  Serial.println("Bluetooth Device is Ready to Pair");
 
   pinMode(setup_EnaStepper, OUTPUT);
 
@@ -82,9 +86,9 @@ void setup() {
 void loop() {
 
 // Check if there i something new on Serial
-  if(Serial.available() > 0){
+  if(ESP_BT.available() > 0){
 
-    serialIn = Serial.readString();
+    serialIn = ESP_BT.readString();
 
      digitalWrite(ONBOARD_LED, HIGH);   // turn the LED on (HIGH is the voltage level)
      delay(500);                        // wait for a second
@@ -93,16 +97,16 @@ void loop() {
 
     // There is, so let's see if it is a valid cmd
     if (serialIn == "B"){                                 // Report elevation (el)
-      Serial.print("EL=");
-      Serial.println(pub_EL);
+      ESP_BT.print("EL=");
+      ESP_BT.println(pub_EL);
     } else if(serialIn == "C"){                           // Report azimuth (az)
-      Serial.print("AZ=");
-      Serial.println(pub_AZ);
+      ESP_BT.print("AZ=");
+      ESP_BT.println(pub_AZ);
     } else if(serialIn == "C2"){                          // Report az and el
-      Serial.print("AZ=");
-      Serial.print(pub_AZ);
-      Serial.print(" EL=");
-      Serial.println(pub_EL);
+      ESP_BT.print("AZ=");
+      ESP_BT.print(pub_AZ);
+      ESP_BT.print(" EL=");
+      ESP_BT.println(pub_EL);
     } else if(serialIn == "S"){                           // Stop all rotation
       cmd_stopEL();
       cmd_stopAZ();
